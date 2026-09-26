@@ -1,14 +1,27 @@
 {
   "expo": {
     "name": "Corn Detector",
-    "slug": "check-residuo",
+    "slug": "corn-detector-prod",
     "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "dark",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#000000"
+    },
+    "assetBundlePatterns": ["**/*"],
     "android": {
-      "package": "com.romesbr.checkresiduo"
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#000000"
+      },
+      "package": "com.romesbr.corndetector"
     },
     "extra": {
       "eas": {
-        "projectId": "73bb5da4-6e46-43dc-b73c-34d4285dbd9d"
+        "projectId": "new-corn-detector"
       }
     }
   }
