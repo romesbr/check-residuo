@@ -1,7 +1,7 @@
 {
   "name": "check-residuo",
   "version": "1.0.0",
-  "main": "expo-app.config.js",
+  "main": "index.js",
   "scripts": {
     "start": "expo start",
     "android": "expo start --android",
@@ -14,10 +14,7 @@
     "expo-status-bar": "~1.11.0",
     "react": "18.2.0",
     "react-native": "0.73.0",
-    "react-native-svg": "^13.14.0",
-    "@tensorflow/tfjs": "^4.11.0",
-    "@tensorflow/tfjs-react-native": "^0.8.7",
-    "@tensorflow-models/coco-ssd": "^2.2.3"
+    "react-native-svg": "^13.14.0"
   },
   "devDependencies": {
     "@babel/core": "^7.23.0"
