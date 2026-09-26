@@ -12,10 +12,11 @@ export default function App() {
     return () => clearInterval(interval);
   }, []);
 
+  // Bboxes se movem com frameCount
   const detections = [
-    { x: 50, y: 100, w: 150, h: 120, conf: 87 },
-    { x: 250, y: 280, w: 120, h: 100, conf: 92 },
-    { x: 150, y: 450, w: 180, h: 140, conf: 78 },
+    { x: 50 + (frameCount * 2) % 100, y: 100 + Math.sin(frameCount * 0.1) * 30, w: 150, h: 120, conf: 87 },
+    { x: 250 - (frameCount * 1.5) % 80, y: 280 + Math.cos(frameCount * 0.15) * 40, w: 120, h: 100, conf: 92 },
+    { x: 150 + (frameCount * 0.8) % 60, y: 450 + Math.sin(frameCount * 0.08) * 25, w: 180, h: 140, conf: 78 },
   ];
 
   return (
