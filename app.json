@@ -11,18 +11,23 @@
       "resizeMode": "contain",
       "backgroundColor": "#000000"
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
-      "supportsTabletMode": true
+      "supportsTabletMode": true,
+      "bundleIdentifier": "com.romesbr.checkresiduo"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#000000"
       },
+      "package": "com.romesbr.checkresiduo",
       "permissions": [
         "android.permission.CAMERA",
-        "android.permission.INTERNET"
+        "android.permission.INTERNET",
+        "android.permission.RECORD_AUDIO"
       ],
       "minSdkVersion": 24
     },
