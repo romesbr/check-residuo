@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 
-// HSV Detection: RGB to HSV converter
 function rgbToHsv(r, g, b) {
   r /= 255;
   g /= 255;
@@ -24,32 +23,22 @@ function rgbToHsv(r, g, b) {
   return { h: h * 360, s, v };
 }
 
-// Detectar milho (amarelo/ouro em HSV)
-function isCornPixel(r, g, b) {
-  const { h, s, v } = rgbToHsv(r, g, b);
-  // Milho: Hue 15-65°, Sat ≥15%, Value ≥25%
-  return h >= 15 && h <= 65 && s >= 0.15 && v >= 0.25;
-}
-
 export default function App() {
   const [frameCount, setFrameCount] = useState(0);
-  const [hsvActive, setHsvActive] = useState(true);
-
-  // Simular detecções baseadas em HSV
-  const detections = hsvActive
-    ? [
-        { x: 50, y: 100, width: 150, height: 120, conf: 87 },
-        { x: 250, y: 280, width: 120, height: 100, conf: 92 },
-        { x: 150, y: 450, width: 180, height: 140, conf: 78 },
-      ]
-    : [];
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setFrameCount((c) => c + 1);
-    }, 500);
+      setFrameCount(prev => prev + 1);
+    }, 300);
+    
     return () => clearInterval(interval);
   }, []);
+
+  const detections = [
+    { x: 50, y: 100, width: 150, height: 120, conf: 87 },
+    { x: 250, y: 280, width: 120, height: 100, conf: 92 },
+    { x: 150, y: 450, width: 180, height: 140, conf: 78 },
+  ];
 
   return (
     <View style={styles.container}>
@@ -76,9 +65,7 @@ export default function App() {
         <Text style={styles.title}>🌽 Corn Detector</Text>
         <Text style={styles.stat}>Frame: {frameCount}</Text>
         <Text style={styles.stat}>Detections: {detections.length}</Text>
-        <Text style={[styles.stat, hsvActive ? styles.active : styles.inactive]}>
-          HSV: {hsvActive ? 'ACTIVE' : 'OFF'}
-        </Text>
+        <Text style={styles.active}>HSV: ACTIVE</Text>
       </View>
     </View>
   );
@@ -91,7 +78,6 @@ const styles = StyleSheet.create({
   label: { color: '#00FF00', fontSize: 10, fontWeight: 'bold', backgroundColor: 'rgba(0,0,0,0.7)', paddingHorizontal: 4 },
   stats: { backgroundColor: 'rgba(0,0,0,0.9)', paddingVertical: 15, paddingHorizontal: 15, borderTopWidth: 2, borderTopColor: '#00FF00' },
   title: { color: '#FFD700', fontSize: 20, fontWeight: 'bold', marginBottom: 8 },
-  stat: { fontSize: 14, marginBottom: 4 },
-  active: { color: '#00FF00' },
-  inactive: { color: '#FF6666' },
+  stat: { color: '#00FF00', fontSize: 14, marginBottom: 4 },
+  active: { color: '#00FF00', fontSize: 14, marginBottom: 4 },
 });
