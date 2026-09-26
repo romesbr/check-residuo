@@ -7,23 +7,23 @@ export default function App() {
   useEffect(() => {
     const interval = setInterval(() => {
       setFrameCount(c => c + 1);
-    }, 500);
+    }, 300);
     
     return () => clearInterval(interval);
   }, []);
 
   const detections = [
-    { x: 50, y: 100, width: 150, height: 120, conf: 87 },
-    { x: 250, y: 280, width: 120, height: 100, conf: 92 },
-    { x: 150, y: 450, width: 180, height: 140, conf: 78 },
+    { x: 50, y: 100, w: 150, h: 120, conf: 87 },
+    { x: 250, y: 280, w: 120, h: 100, conf: 92 },
+    { x: 150, y: 450, w: 180, h: 140, conf: 78 },
   ];
 
   return (
     <View style={styles.container}>
       <View style={styles.viewport}>
-        {detections.map((det, i) => (
-          <View key={`bbox-${i}`} style={{ position: 'absolute', left: det.x, top: det.y, width: det.width, height: det.height, borderWidth: 2, borderColor: '#00FF00' }}>
-            <Text style={{ color: '#00FF00', fontSize: 10, fontWeight: 'bold' }}>{det.conf}%</Text>
+        {detections.map((d, i) => (
+          <View key={i} style={[styles.bbox, { left: d.x, top: d.y, width: d.w, height: d.h }]}>
+            <Text style={styles.label}>{d.conf}%</Text>
           </View>
         ))}
       </View>
@@ -41,6 +41,8 @@ export default function App() {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#000' },
   viewport: { flex: 1, backgroundColor: '#1a1a1a', position: 'relative' },
+  bbox: { position: 'absolute', borderWidth: 2, borderColor: '#00FF00', justifyContent: 'flex-start', paddingTop: 2, paddingLeft: 2 },
+  label: { color: '#00FF00', fontSize: 10, fontWeight: 'bold', backgroundColor: 'rgba(0,0,0,0.8)', paddingHorizontal: 3 },
   stats: { backgroundColor: 'rgba(0,0,0,0.9)', padding: 15, borderTopWidth: 2, borderTopColor: '#00FF00' },
   title: { color: '#FFD700', fontSize: 20, fontWeight: 'bold', marginBottom: 8 },
   stat: { color: '#00FF00', fontSize: 14, marginBottom: 4 },
