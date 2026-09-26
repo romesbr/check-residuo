@@ -1,98 +1,103 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, Alert } from 'react-native';
 import { Camera } from 'expo-camera';
 
 export default function App() {
-  const [hasPermission, setHasPermission] = useState(null);
+  const [permission, setPermission] = useState(null);
+  const [cameraError, setCameraError] = useState(null);
+  const [frameCount, setFrameCount] = useState(0);
   const [detections, setDetections] = useState([]);
-  const cameraRef = useRef(null);
-  const frameCount = useRef(0);
 
   useEffect(() => {
-    (async () => {
-      const { status } = await Camera.requestCameraPermissionsAsync();
-      setHasPermission(status === 'granted');
-    })();
+    requestCameraPermission();
   }, []);
 
-  const processCameraFrame = () => {
-    frameCount.current += 1;
-    if (frameCount.current % 10 === 0) {
-      setDetections([
-        { id: 1, x: 50, y: 100, confidence: 0.87 },
-        { id: 2, x: 200, y: 150, confidence: 0.92 }
-      ]);
+  const requestCameraPermission = async () => {
+    try {
+      const { status } = await Camera.requestCameraPermissionsAsync();
+      setPermission(status === 'granted');
+    } catch (error) {
+      Alert.alert('Erro', 'Falha ao requisitar câmera: ' + error.message);
+      setCameraError(error.message);
     }
   };
 
-  if (hasPermission === null) {
-    return <View style={styles.container}><Text style={styles.text}>Solicitando câmera...</Text></View>;
+  if (cameraError) {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.errorText}>Erro: {cameraError}</Text>
+        <Text style={styles.infoText}>Reinicie o app</Text>
+      </View>
+    );
   }
-  if (hasPermission === false) {
-    return <View style={styles.container}><Text style={styles.text}>Acesso negado</Text></View>;
+
+  if (permission === null) {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.text}>Solicitando permissão...</Text>
+      </View>
+    );
+  }
+
+  if (!permission) {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.text}>Câmera não autorizada</Text>
+      </View>
+    );
   }
 
   return (
     <View style={styles.container}>
-      <Camera 
-        ref={cameraRef} 
-        style={styles.camera}
-        onCameraReady={processCameraFrame}
-      />
-      <View style={styles.overlay}>
-        {detections.map(d => (
-          <View 
-            key={d.id}
-            style={[
-              styles.bbox,
-              { left: d.x, top: d.y }
-            ]}
-          >
-            <Text style={styles.bboxLabel}>{Math.round(d.confidence * 100)}%</Text>
-          </View>
-        ))}
-      </View>
+      <Camera style={styles.camera} />
       <View style={styles.info}>
         <Text style={styles.title}>Corn Detector</Text>
+        <Text style={styles.stat}>Status: Pronto</Text>
         <Text style={styles.stat}>Detecções: {detections.length}</Text>
-        <Text style={styles.stat}>Frames: {frameCount.current}</Text>
       </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#000' },
-  camera: { flex: 1 },
-  overlay: { 
-    position: 'absolute', 
-    top: 0, 
-    left: 0, 
-    right: 0, 
-    bottom: 60,
-    pointerEvents: 'none' 
+  container: {
+    flex: 1,
+    backgroundColor: '#000',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-  bbox: {
-    position: 'absolute',
-    width: 60,
-    height: 60,
-    borderWidth: 2,
-    borderColor: '#00FF00',
-  },
-  bboxLabel: {
-    color: '#00FF00',
-    fontSize: 10,
-    fontWeight: 'bold',
+  camera: {
+    flex: 1,
+    width: '100%',
   },
   info: {
-    backgroundColor: 'rgba(0,0,0,0.8)',
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
+    backgroundColor: 'rgba(0,0,0,0.85)',
+    paddingVertical: 12,
+    paddingHorizontal: 16,
   },
-  title: { color: '#FFD700', fontSize: 16, fontWeight: 'bold' },
-  stat: { color: '#FFA500', fontSize: 11, marginTop: 2 },
+  title: {
+    color: '#FFD700',
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 6,
+  },
+  stat: {
+    color: '#FFA500',
+    fontSize: 12,
+    marginVertical: 2,
+  },
+  text: {
+    color: '#fff',
+    fontSize: 16,
+  },
+  errorText: {
+    color: '#FF4444',
+    fontSize: 14,
+    marginBottom: 10,
+    textAlign: 'center',
+  },
+  infoText: {
+    color: '#aaa',
+    fontSize: 12,
+  },
 });
