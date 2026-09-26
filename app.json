@@ -15,7 +15,6 @@
       "**/*"
     ],
     "ios": {
-      "supportsTabletMode": true,
       "bundleIdentifier": "com.romesbr.checkresiduo"
     },
     "android": {
@@ -28,8 +27,7 @@
         "android.permission.CAMERA",
         "android.permission.INTERNET",
         "android.permission.RECORD_AUDIO"
-      ],
-      "minSdkVersion": 24
+      ]
     },
     "plugins": [
       [
