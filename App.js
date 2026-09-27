@@ -1,19 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { CameraView, useCameraPermissions } from 'expo-camera';
+import { Camera } from 'expo-camera';
 
 export default function App() {
-  const [permission, requestPermission] = useCameraPermissions();
   const [frameCount, setFrameCount] = useState(0);
   const [detections, setDetections] = useState([]);
   const cameraRef = useRef(null);
-
-  // Pedir permissão
-  useEffect(() => {
-    if (!permission?.granted) {
-      requestPermission();
-    }
-  }, [permission]);
 
   // Incrementa frameCount
   useEffect(() => {
@@ -27,7 +19,6 @@ export default function App() {
   useEffect(() => {
     const detectionInterval = setInterval(() => {
       if (Math.random() > 0.5) {
-        // Detecção simulada
         setDetections([
           { x: 50 + Math.random() * 200, y: 100 + Math.random() * 200, w: 150, h: 120, conf: 80 + Math.random() * 15 },
           { x: 250 + Math.random() * 150, y: 250 + Math.random() * 200, w: 120, h: 100, conf: 75 + Math.random() * 20 },
@@ -39,17 +30,9 @@ export default function App() {
     return () => clearInterval(detectionInterval);
   }, []);
 
-  if (!permission?.granted) {
-    return (
-      <View style={styles.container}>
-        <Text style={styles.permText}>Aguardando permissão de câmera...</Text>
-      </View>
-    );
-  }
-
   return (
     <View style={styles.container}>
-      <CameraView ref={cameraRef} style={styles.camera} facing="back">
+      <Camera ref={cameraRef} style={styles.camera} type={Camera.Constants.Type.back}>
         <View style={styles.overlay}>
           {detections.map((d, i) => (
             <View key={i} style={[styles.bbox, { left: d.x, top: d.y, width: d.w, height: d.h }]}>
@@ -57,7 +40,7 @@ export default function App() {
             </View>
           ))}
         </View>
-      </CameraView>
+      </Camera>
 
       <View style={styles.stats}>
         <Text style={styles.title}>🌽 Corn Detector</Text>
@@ -79,5 +62,4 @@ const styles = StyleSheet.create({
   title: { color: '#FFD700', fontSize: 20, fontWeight: 'bold', marginBottom: 8 },
   stat: { color: '#00FF00', fontSize: 14, marginBottom: 4 },
   active: { color: '#00FF00', fontSize: 14 },
-  permText: { color: '#FFD700', fontSize: 18, textAlign: 'center', marginTop: 50 },
 });
