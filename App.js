@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, useWindowDimensions } from 'react-native';
 import { Camera } from 'expo-camera';
 import { detectFromBase64 } from './detect';
 
@@ -9,7 +9,8 @@ export default function App() {
   const [hasPermission, setHasPermission] = useState(null);
   const [ready, setReady] = useState(false);
   const [pictureSize, setPictureSize] = useState(undefined);
-  const [view, setView] = useState({ w: 0, h: 0 });
+  const win = useWindowDimensions();
+  const [layout, setLayout] = useState(null);
   const [boxes, setBoxes] = useState([]);
   const [dbg, setDbg] = useState({ res: '-', ms: 0, pct: 0, n: 0, err: '' });
   const [running, setRunning] = useState(true);
@@ -60,11 +61,13 @@ export default function App() {
     return () => clearInterval(id);
   }, [ready, running]);
 
+  const view = layout && layout.w > 0 ? layout : { w: win.width, h: win.height };
+
   if (hasPermission === null) return <View style={styles.center}><Text style={styles.text}>Solicitando permissão...</Text></View>;
   if (hasPermission === false) return <View style={styles.center}><Text style={styles.text}>Sem permissão de câmera. Libere nas configurações do Android.</Text></View>;
 
   return (
-    <View style={styles.container} onLayout={e => setView({ w: e.nativeEvent.layout.width, h: e.nativeEvent.layout.height })}>
+    <View style={styles.container}>
       <Camera
         ref={cameraRef}
         style={styles.camera}
@@ -75,7 +78,7 @@ export default function App() {
         onMountError={e => setDbg(d => ({ ...d, err: 'mount: ' + (e && e.message) }))}
       />
 
-      <View style={styles.overlay} pointerEvents="none">
+      <View style={styles.overlay} pointerEvents="none" onLayout={e => { const { width, height } = e.nativeEvent.layout; if (width > 0) setLayout({ w: width, h: height }); }}>
         {boxes.map((b, i) => (
           <View key={i} style={[styles.bbox, { left: b.x * view.w, top: b.y * view.h, width: b.w * view.w, height: b.h * view.h }]}>
             <Text style={styles.label}>MILHO {b.conf}%</Text>
@@ -88,6 +91,7 @@ export default function App() {
         <Text style={styles.stat}>Detecções: {boxes.length}  |  Amarelo: {dbg.pct.toFixed(1)}%</Text>
         <Text style={styles.dbg}>Análises: {dbg.n}  |  Foto: {dbg.res}  |  {dbg.ms} ms</Text>
         <Text style={styles.dbg}>Resolução pedida: {pictureSize || 'padrão'}  |  Câmera: {ready ? 'pronta' : 'iniciando'}</Text>
+        <Text style={styles.dbg}>Tela: {Math.round(view.w)}x{Math.round(view.h)}{boxes[0] ? `  |  Box1: ${Math.round(boxes[0].x * view.w)},${Math.round(boxes[0].y * view.h)} ${Math.round(boxes[0].w * view.w)}x${Math.round(boxes[0].h * view.h)}` : ''}</Text>
         {dbg.err ? <Text style={styles.err}>Erro: {dbg.err}</Text> : null}
         <TouchableOpacity style={styles.btn} onPress={() => setRunning(r => !r)}>
           <Text style={styles.btnText}>{running ? '⏸ Pausar' : '▶ Retomar'}</Text>
